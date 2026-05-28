@@ -45,7 +45,15 @@ Rotas para conferir:
 
 ## Etapa 2 - Subir para o Git
 
-O repositorio local ja existe, mas ainda esta sem commit inicial.
+Status: concluido em `main`.
+
+Repositorio:
+
+- https://github.com/Elitonr65/gabriela_croche.git
+
+Commit inicial:
+
+- `a48e67e` - `Prepare catalog for Vercel deployment`
 
 ```bash
 git status
