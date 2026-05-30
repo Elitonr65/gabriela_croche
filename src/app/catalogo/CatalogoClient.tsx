@@ -161,9 +161,9 @@ export default function CatalogoClient({
       <section className="mt-6">
         {products.length === 0 && (
           <div className="card p-8 text-center">
-            <p className="text-xl font-black text-[var(--foreground)]">Nenhum produto público encontrado</p>
+            <p className="text-xl font-black text-[var(--foreground)]">O catálogo está vazio no momento</p>
             <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-[var(--muted)]">
-              Se existem produtos ativos no admin, execute o arquivo scripts/supabase-policies.sql no SQL Editor do Supabase.
+              Estamos preparando a seleção de produtos. Volte em breve para conferir as novidades.
             </p>
           </div>
         )}

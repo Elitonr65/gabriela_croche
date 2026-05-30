@@ -104,9 +104,9 @@ export default async function Home() {
 
             {latestProducts.length === 0 ? (
               <div className="card p-8 text-center">
-                <p className="text-xl font-black text-[var(--foreground)]">Nenhum produto público encontrado</p>
+                <p className="text-xl font-black text-[var(--foreground)]">Nenhum produto disponível no momento</p>
                 <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-[var(--muted)]">
-                  O admin pode estar funcionando, mas o Supabase precisa permitir leitura pública dos produtos ativos.
+                  Estamos finalizando o catálogo. Volte mais tarde para ver os novos produtos.
                 </p>
               </div>
             ) : (
@@ -151,10 +151,10 @@ export default async function Home() {
 
             {products.filter((p) => p.mais_pedido).length === 0 ? (
               <div className="mt-4">
-                <p className="text-sm text-[var(--muted)]">Nenhum produto marcado como mais pedido.</p>
+                <p className="text-sm text-[var(--muted)]">Ainda não há produtos marcados como mais pedidos.</p>
                 {products.length === 0 && (
                   <p className="message-warning mt-5 text-sm">
-                    O catálogo público não recebeu produtos. Se o admin mostra itens ativos, aplique as policies do Supabase.
+                    O catálogo está vazio no momento. Adicione produtos no admin para que apareçam aqui.
                   </p>
                 )}
               </div>
