@@ -3,11 +3,11 @@ export function getErrorMessage(error: unknown, fallback = "Algo deu errado. Ten
     const lowerMessage = message.toLowerCase()
 
     if (lowerMessage.includes("row-level security") || lowerMessage.includes("rls")) {
-      return "Permissao bloqueada pelo Supabase (RLS). Execute scripts/supabase-policies.sql no SQL Editor do Supabase e tente novamente."
+      return "Não foi possível carregar os produtos. Por favor, tente novamente em alguns instantes."
     }
 
     if (lowerMessage.includes("bucket not found")) {
-      return "Bucket de imagens nao encontrado. Execute scripts/supabase-policies.sql para criar/ajustar o bucket produtos."
+      return "Não foi possível carregar as imagens do produto. Por favor, tente novamente em alguns instantes."
     }
 
     return message
