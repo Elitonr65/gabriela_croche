@@ -8,7 +8,9 @@ type ProductSidebarProps = {
   nome: string
   descricao: string | null
   cores: string | null
+  categoria?: string | null
   imagemUrl: string | null
+  productId?: string
 }
 
 const colorMap: Record<string, string> = {
@@ -72,16 +74,22 @@ function getColorHex(colorName: string): string {
   return colorMap[normalized] || "#9ca3af"
 }
 
-export default function ProductSidebar({ nome, descricao, cores, imagemUrl }: ProductSidebarProps) {
+export default function ProductSidebar({ nome, descricao, cores, categoria, imagemUrl, productId }: ProductSidebarProps) {
   const coresList = cores
     ? cores.split(",").map((c) => c.trim()).filter(Boolean)
     : []
 
   const [selectedCor, setSelectedCor] = useState<string | null>(null)
 
+  // Construir URL da página do produto para melhorar preview no WhatsApp
+  const productUrl = typeof window !== "undefined" && productId
+    ? `${window.location.origin}/produto/${productId}`
+    : undefined
+
   const whatsappLink = generateWhatsAppLink({
     nomeProduto: nome,
     cor: selectedCor || undefined,
+    productUrl: productUrl,
     imagemUrl: imagemUrl || undefined,
   })
 
@@ -95,6 +103,12 @@ export default function ProductSidebar({ nome, descricao, cores, imagemUrl }: Pr
       <h1 className="mt-4 text-4xl font-black leading-tight text-[var(--foreground)]">
         {nome}
       </h1>
+
+      {categoria && (
+        <p className="mt-3 text-sm font-black uppercase tracking-[0.18em] text-[var(--primary)]">
+          {categoria}
+        </p>
+      )}
 
       <p className="mt-4 text-base leading-8 text-[var(--muted)]">
         {descricao || "Produto cadastrado no catálogo."}

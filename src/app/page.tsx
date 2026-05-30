@@ -20,12 +20,12 @@ const highlights = [
   {
     icon: Palette,
     title: "Cores sob consulta",
-    description: "Paleta inspirada nos fios da marca: rosa, azul, amarelo e roxo.",
+    description: "Paleta inspirada nos fios da marca: Circulo, Euro Roma e Bandeirante.",
   },
   {
     icon: MessageCircle,
     title: "Atendimento direto",
-    description: "Cliente escolhe a peça e finaliza a conversa pelo WhatsApp.",
+    description: "Escolha a peça, a cor e finaliza a conversa pelo WhatsApp.",
   },
 ]
 
@@ -39,7 +39,7 @@ export default async function Home() {
         className="relative min-h-[72vh] overflow-hidden border-b border-[var(--line)] bg-[#f4ddc6]"
         style={{
           backgroundImage:
-            "linear-gradient(90deg, rgba(255, 247, 239, 0.98) 0%, rgba(255, 247, 239, 0.92) 34%, rgba(255, 247, 239, 0.46) 68%, rgba(255, 247, 239, 0.18) 100%), url('/brand-gabriela-braga.jpeg')",
+            "linear-gradient(180deg, rgba(255, 247, 239, 0.96) 0%, rgba(255, 247, 239, 0.9) 40%, rgba(255, 247, 239, 0.72) 70%, rgba(255, 247, 239, 0.5) 100%), url('/brand-gabriela-braga.jpeg')",
           backgroundPosition: "center",
           backgroundSize: "cover",
         }}
@@ -54,17 +54,13 @@ export default async function Home() {
               Gabriela Braga Crochê
             </h1>
             <p className="mt-5 max-w-2xl text-lg leading-8 text-[var(--muted)]">
-              Catálogo online com produtos ativos, detalhes de cores e contato direto pelo WhatsApp para combinar disponibilidade.
+              Catálogo online com detalhes de cores e contato direto pelo WhatsApp para combinar disponibilidade.
             </p>
 
             <div className="mt-7 flex flex-col gap-3 sm:flex-row">
               <Link href="/catalogo" className="btn-primary">
                 <ShoppingBag className="h-5 w-5" />
                 Ver catálogo
-              </Link>
-              <Link href="/login" className="btn-secondary">
-                Abrir admin
-                <ArrowRight className="h-5 w-5" />
               </Link>
             </div>
           </div>
@@ -150,15 +146,37 @@ export default async function Home() {
           <aside className="card h-fit p-6">
             <p className="brand-kicker">
               <ShieldCheck className="h-4 w-4" />
-              Catálogo
+              Mais pedidos
             </p>
-            <p className="mt-4 text-5xl font-black leading-none text-[var(--primary)]">{products.length}</p>
-            <p className="mt-2 text-base font-semibold text-[var(--muted)]">produto(s) ativo(s) visíveis para clientes</p>
 
-            {products.length === 0 && (
-              <p className="message-warning mt-5 text-sm">
-                O catálogo público não recebeu produtos. Se o admin mostra itens ativos, aplique as policies do Supabase.
-              </p>
+            {products.filter((p) => p.mais_pedido).length === 0 ? (
+              <div className="mt-4">
+                <p className="text-sm text-[var(--muted)]">Nenhum produto marcado como mais pedido.</p>
+                {products.length === 0 && (
+                  <p className="message-warning mt-5 text-sm">
+                    O catálogo público não recebeu produtos. Se o admin mostra itens ativos, aplique as policies do Supabase.
+                  </p>
+                )}
+              </div>
+            ) : (
+              <div className="mt-4 flex flex-col gap-3">
+                {products
+                  .filter((p) => p.mais_pedido)
+                  .slice(0, 6)
+                  .map((product) => (
+                    <Link key={product.id} href={`/produto/${product.id}`} className="flex items-center gap-3">
+                      <div className="relative h-12 w-12 overflow-hidden rounded-md bg-[var(--surface-muted)]">
+                        <SafeImage src={product.imagens?.[0]?.url} alt={product.nome} fill className="object-cover" sizes="48px" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-black text-[var(--foreground)]">{product.nome}</p>
+                        {product.categoria && (
+                          <p className="text-xs text-[var(--muted)]">{product.categoria}</p>
+                        )}
+                      </div>
+                    </Link>
+                  ))}
+              </div>
             )}
           </aside>
         </section>

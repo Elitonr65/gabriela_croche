@@ -10,6 +10,8 @@ export async function getProducts(): Promise<Product[]> {
       nome,
       descricao,
       cores,
+      categoria,
+      mais_pedido,
       status,
       imagens (id, url, ordem)
     `)

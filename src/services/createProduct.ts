@@ -4,6 +4,8 @@ type CreateProductInput = {
   nome: string
   descricao: string
   cores: string
+  categoria: string
+  maisPedido?: boolean
   images: string[]
 }
 
@@ -14,6 +16,8 @@ export async function createProduct(data: CreateProductInput) {
       nome: data.nome,
       descricao: data.descricao,
       cores: data.cores || null,
+      categoria: data.categoria || null,
+      mais_pedido: data.maisPedido || false,
       status: true,
     })
     .select()

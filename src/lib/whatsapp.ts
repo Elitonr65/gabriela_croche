@@ -14,9 +14,10 @@ type WhatsAppOptions = {
   nomeProduto: string
   cor?: string
   imagemUrl?: string
+  productUrl?: string
 }
 
-export function generateWhatsAppLink({ nomeProduto, cor, imagemUrl }: WhatsAppOptions) {
+export function generateWhatsAppLink({ nomeProduto, cor, imagemUrl, productUrl }: WhatsAppOptions) {
   let mensagem = `Ola! Tenho interesse no produto: *${nomeProduto}*`
 
   if (cor) {
@@ -25,7 +26,10 @@ export function generateWhatsAppLink({ nomeProduto, cor, imagemUrl }: WhatsAppOp
 
   mensagem += `\nVoce ainda tem disponivel?`
 
-  if (imagemUrl) {
+  // Preferir link para a página do produto (melhor preview no WhatsApp).
+  if (productUrl) {
+    mensagem += `\n\nVeja o produto: ${productUrl}`
+  } else if (imagemUrl) {
     mensagem += `\n\nFoto do produto: ${imagemUrl}`
   }
 

@@ -4,6 +4,7 @@ import { useMemo, useState } from "react"
 import Link from "next/link"
 import { ArrowRight, PackageSearch, Palette, Search, X } from "lucide-react"
 import SafeImage from "@/components/SafeImage"
+import CategoryBrowser from "@/components/CategoryBrowser"
 import type { Product } from "@/types/product"
 
 const colorMap: Record<string, string> = {
@@ -79,21 +80,30 @@ export default function CatalogoClient({
   products: Product[]
 }) {
   const [search, setSearch] = useState("")
+  const [selectedCategory, setSelectedCategory] = useState("all")
+
+  const categories = useMemo(() => {
+    const values = products
+      .map((product) => product.categoria?.trim())
+      .filter((categoria): categoria is string => Boolean(categoria))
+    const uniqueCategories = Array.from(new Set(values)).sort((a, b) => a.localeCompare(b, "pt-BR", { sensitivity: "base" }))
+    return ["all", ...uniqueCategories]
+  }, [products])
 
   const filteredProducts = useMemo(() => {
     const query = search.trim().toLowerCase()
 
-    if (!query) {
-      return products
-    }
-
     return products.filter((product) => {
       const name = product.nome.toLowerCase()
       const description = product.descricao?.toLowerCase() || ""
+      const category = (product.categoria || "").trim().toLowerCase()
 
-      return name.includes(query) || description.includes(query)
+      const matchesQuery = !query || name.includes(query) || description.includes(query)
+      const matchesCategory = selectedCategory === "all" || category === selectedCategory.toLowerCase()
+
+      return matchesQuery && matchesCategory
     })
-  }, [products, search])
+  }, [products, search, selectedCategory])
 
   return (
     <div className="app-container py-8">
@@ -134,6 +144,17 @@ export default function CatalogoClient({
               Limpar
             </button>
           )}
+        </div>
+
+        <div className="mt-6">
+          <p className="mb-4 text-sm font-black uppercase tracking-[0.2em] text-[var(--muted)]">
+            Filtrar por categoria
+          </p>
+          <CategoryBrowser
+            categories={categories}
+            selectedCategory={selectedCategory}
+            onSelectCategory={setSelectedCategory}
+          />
         </div>
       </section>
 
@@ -177,6 +198,11 @@ export default function CatalogoClient({
 
                 <div className="p-5">
                   <h2 className="text-xl font-black text-[var(--foreground)]">{product.nome}</h2>
+                  {product.categoria && (
+                    <p className="text-xs font-black uppercase tracking-[0.18em] text-[var(--primary)]">
+                      {product.categoria}
+                    </p>
+                  )}
                   <p className="mt-2 line-clamp-2 min-h-[3rem] text-sm leading-6 text-[var(--muted)]">
                     {product.descricao || "Produto cadastrado no catálogo."}
                   </p>

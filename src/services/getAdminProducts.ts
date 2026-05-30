@@ -12,6 +12,8 @@ export async function getAdminProducts(): Promise<AdminProduct[]> {
       nome,
       descricao,
       cores,
+      categoria,
+      mais_pedido,
       status,
       imagens (id, url, ordem)
     `)

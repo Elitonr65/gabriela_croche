@@ -10,6 +10,7 @@ export async function getProductById(id: string): Promise<Product | null> {
       nome,
       descricao,
       cores,
+      categoria,
       status,
       imagens (id, url, ordem)
     `)

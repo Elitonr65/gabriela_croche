@@ -6,7 +6,9 @@ export async function updateProduct(id: string, data: {
   nome: string
   descricao: string
   cores: string
+  categoria: string
   status: boolean
+  maisPedido?: boolean
 }) {
   const { data: currentProduct, error: currentError } = await supabase
     .from("produtos")
@@ -25,6 +27,8 @@ export async function updateProduct(id: string, data: {
         nome: data.nome,
         descricao: data.descricao,
         cores: data.cores || null,
+        categoria: data.categoria || null,
+        mais_pedido: data.maisPedido === true,
         status,
       },
       { count: "exact" }

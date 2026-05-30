@@ -11,6 +11,9 @@ export type Product = {
   nome: string
   descricao: string | null
   cores: string | null
+  categoria?: string | null
+  maisPedido?: boolean
+  mais_pedido?: boolean
   status?: ProductStatus
   imagens?: ProductImage[] | null
 }
@@ -23,5 +26,7 @@ export type ProductFormData = {
   nome: string
   descricao: string
   cores: string
+  categoria: string
+  maisPedido?: boolean
   status: boolean
 }

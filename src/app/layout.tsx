@@ -1,6 +1,6 @@
 import Link from "next/link"
 import Image from "next/image"
-import { Heart, LayoutDashboard, ShoppingBag } from "lucide-react"
+import { Heart, ShoppingBag } from "lucide-react"
 import "./globals.css"
 
 export const metadata = {
@@ -42,10 +42,6 @@ export default function RootLayout({
                 <ShoppingBag className="h-4 w-4 text-[var(--primary)]" />
                 <span className="hidden sm:inline">Catálogo</span>
               </Link>
-              <Link href="/login" aria-label="Abrir painel administrativo" title="Admin" className="inline-flex items-center gap-2 rounded-lg border border-[var(--line)] bg-white px-2.5 py-2 text-[var(--foreground)] hover:bg-[var(--surface-muted)] sm:px-3">
-                <LayoutDashboard className="h-4 w-4 text-[var(--accent)]" />
-                <span className="hidden sm:inline">Admin</span>
-              </Link>
             </nav>
           </div>
         </header>
@@ -54,11 +50,21 @@ export default function RootLayout({
 
         <footer className="border-t border-[var(--line)] bg-white">
           <div className="app-container flex flex-col items-center justify-center gap-2 py-5 text-center text-sm text-[var(--muted)] sm:flex-row">
-            <span className="inline-flex items-center gap-2 font-semibold">
-              Feito para valorizar peças artesanais <Heart className="h-4 w-4 fill-[var(--primary)] text-[var(--primary)]" />
-            </span>
+            <Link href="/login" className="inline-flex items-center gap-2 font-semibold hover:opacity-80">
+              <Image
+                src="/brand-gabriela-braga.jpeg"
+                alt="Gabriela Braga Crochê"
+                width={28}
+                height={28}
+                className="h-7 w-7 rounded-lg border border-[var(--line)] object-cover"
+              />
+              <span className="inline-flex items-center gap-2">
+                Feito para valorizar peças artesanais <Heart className="h-4 w-4 fill-[var(--primary)] text-[var(--primary)]" />
+              </span>
+            </Link>
             <span className="hidden text-[var(--line)] sm:inline">|</span>
-            <span>Desenvolvido por Notile Sustain Solution Technology</span>
+            <span>By Notile Sustain Solution Technology</span>
+            <span className="hidden text-[var(--line)] sm:inline">|</span>
           </div>
         </footer>
       </body>

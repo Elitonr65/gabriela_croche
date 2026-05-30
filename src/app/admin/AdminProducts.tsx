@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react"
 import {
   ClipboardCheck,
   Edit3,
+  Menu,
   Power,
   RefreshCw,
   Search,
@@ -12,6 +13,7 @@ import {
 } from "lucide-react"
 import AdminSkeleton from "@/components/AdminSkeleton"
 import SafeImage from "@/components/SafeImage"
+import CategoryBrowser from "@/components/CategoryBrowser"
 import { getErrorMessage } from "@/lib/errors"
 import { isProductActive } from "@/lib/productStatus"
 import { CARE_INSTRUCTIONS_MESSAGE, generateCareInstructionsWhatsAppLink } from "@/lib/whatsapp"
@@ -33,10 +35,13 @@ export default function AdminProducts() {
   const [editingProduct, setEditingProduct] = useState<AdminProduct | null>(null)
   const [query, setQuery] = useState("")
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all")
+  const [selectedCategory, setSelectedCategory] = useState("all")
+  const [showCategoryMenu, setShowCategoryMenu] = useState(false)
   const [formData, setFormData] = useState<ProductFormData>({
     nome: "",
     descricao: "",
     cores: "",
+    categoria: "",
     status: true,
   })
   const [editFiles, setEditFiles] = useState<File[]>([])
@@ -49,6 +54,15 @@ export default function AdminProducts() {
     () => products.filter((product) => isProductActive(product.status)).length,
     [products]
   )
+
+  const categories = useMemo(() => {
+    const values = products
+      .map((product) => product.categoria?.trim())
+      .filter((categoria): categoria is string => Boolean(categoria))
+    const uniqueCategories = Array.from(new Set(values)).sort((a, b) => a.localeCompare(b, "pt-BR", { sensitivity: "base" }))
+
+    return ["all", ...uniqueCategories]
+  }, [products])
 
   const filteredProducts = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase()
@@ -65,9 +79,13 @@ export default function AdminProducts() {
         (statusFilter === "active" && active) ||
         (statusFilter === "inactive" && !active)
 
-      return matchesQuery && matchesStatus
+      const normalizedCategory = (product.categoria || "").trim().toLowerCase()
+      const matchesCategory =
+        selectedCategory === "all" || normalizedCategory === selectedCategory.toLowerCase()
+
+      return matchesQuery && matchesStatus && matchesCategory
     })
-  }, [products, query, statusFilter])
+  }, [products, query, statusFilter, selectedCategory])
 
   async function loadProducts(showLoading = true) {
     if (showLoading) {
@@ -92,6 +110,8 @@ export default function AdminProducts() {
       nome: product.nome,
       descricao: product.descricao || "",
       cores: product.cores || "",
+      categoria: product.categoria || "",
+      maisPedido: product.mais_pedido === true || product.maisPedido === true,
       status: isProductActive(product.status),
     })
     setEditFiles([])
@@ -269,28 +289,58 @@ export default function AdminProducts() {
           </a>
         </div>
 
-        <div className="mt-6 grid gap-3 xl:grid-cols-[1fr_auto]">
-          <label className="relative">
-            <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[var(--primary)]" />
-            <input
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              placeholder="Buscar produto"
-              className="field px-12 py-3 text-base"
-            />
-          </label>
+<div className="mt-6 grid gap-3">
+          <div className="grid gap-3 lg:grid-cols-[1fr_auto] items-start">
+            <label className="relative min-w-0">
+              <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[var(--primary)]" />
+              <input
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                placeholder="Buscar produto"
+                className="field w-full min-w-0 px-12 py-3 text-base"
+              />
+            </label>
 
-          <div className="grid grid-cols-3 gap-2">
-            <button type="button" onClick={() => setStatusFilter("all")} className={filterButtonClass("all")}>
-              Todos
-            </button>
-            <button type="button" onClick={() => setStatusFilter("active")} className={filterButtonClass("active")}>
-              Ativos
-            </button>
-            <button type="button" onClick={() => setStatusFilter("inactive")} className={filterButtonClass("inactive")}>
-              Inativos
-            </button>
+            <div className="grid min-w-0 grid-cols-3 gap-2">
+              <button type="button" onClick={() => setStatusFilter("all")} className={filterButtonClass("all")}> 
+                Todos
+              </button>
+              <button type="button" onClick={() => setStatusFilter("active")} className={filterButtonClass("active")}> 
+                Ativos
+              </button>
+              <button type="button" onClick={() => setStatusFilter("inactive")} className={filterButtonClass("inactive")}> 
+                Inativos
+              </button>
+            </div>
           </div>
+
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <button
+              type="button"
+              onClick={() => setShowCategoryMenu((current) => !current)}
+              className="btn-secondary inline-flex items-center justify-center gap-2 w-full sm:w-auto"
+            >
+              <Menu className="h-4 w-4" />
+              Categorias
+            </button>
+
+            <p className="text-sm text-[var(--muted)]">
+              Categoria atual: <span className="font-black text-[var(--foreground)]">{selectedCategory === "all" ? "Todas" : selectedCategory}</span>
+            </p>
+          </div>
+
+          {showCategoryMenu && (
+            <div className="rounded-3xl border border-[var(--line)] bg-white p-4 shadow-sm">
+              <CategoryBrowser
+                categories={categories}
+                selectedCategory={selectedCategory}
+                onSelectCategory={(category) => {
+                  setSelectedCategory(category)
+                  setShowCategoryMenu(false)
+                }}
+              />
+            </div>
+          )}
         </div>
       </section>
 
@@ -338,6 +388,27 @@ export default function AdminProducts() {
             />
 
             <div>
+              <label className="block text-sm font-bold text-[var(--foreground)]">Categoria</label>
+              <select
+                value={formData.categoria}
+                onChange={(event) =>
+                  setFormData((current) => ({ ...current, categoria: event.target.value }))
+                }
+                className="field mt-2 px-4 py-3 text-base"
+              >
+                <option value="">Nenhuma</option>
+                <option value="Sousplats">Sousplats</option>
+                <option value="Trilhos de mesa">Trilhos de mesa</option>
+                <option value="Caminhos de mesa">Caminhos de mesa</option>
+                <option value="Porta-copos">Porta-copos</option>
+                <option value="Descanso de panela">Descanso de panela</option>
+                <option value="Porta guardanapo">Porta guardanapo</option>
+                <option value="Itens de Decoração">Itens de Decoração</option>
+              </select>
+              <p className="mt-2 text-sm text-[var(--muted)]">Categoria é opcional e facilita a organização do catálogo.</p>
+            </div>
+
+            <div>
               <label className="block text-sm font-bold text-[var(--foreground)]">Cores disponíveis</label>
               <input
                 value={formData.cores}
@@ -359,6 +430,18 @@ export default function AdminProducts() {
                 className="h-5 w-5"
               />
               Produto ativo no catalogo
+            </label>
+
+            <label className="flex items-center gap-3 rounded-lg border border-[var(--line)] bg-[var(--surface-muted)] px-4 py-3 text-base font-bold text-[var(--foreground)]">
+              <input
+                type="checkbox"
+                checked={!!formData.maisPedido}
+                onChange={(event) =>
+                  setFormData((current) => ({ ...current, maisPedido: event.target.checked }))
+                }
+                className="h-5 w-5"
+              />
+              Marcar como &quot;Mais pedido&quot;
             </label>
 
             {editingProduct.imagens && editingProduct.imagens.length > 0 && (
@@ -499,10 +582,18 @@ export default function AdminProducts() {
                 <div>
                   <div className="flex flex-wrap items-center gap-2">
                     <h2 className="text-xl font-black text-[var(--foreground)]">{product.nome}</h2>
-                    <span className={`badge ${active ? "badge-success" : "badge-muted"}`}>
-                      {active ? "Ativo" : "Inativo"}
-                    </span>
+                      <span className={`badge ${active ? "badge-success" : "badge-muted"}`}>
+                        {active ? "Ativo" : "Inativo"}
+                      </span>
+                      {(product.mais_pedido || product.maisPedido) && (
+                        <span className="badge badge-accent ml-2">Mais pedido</span>
+                      )}
                   </div>
+                  {product.categoria && (
+                    <p className="mt-2 text-sm font-black uppercase tracking-[0.15em] text-[var(--primary)]">
+                      {product.categoria}
+                    </p>
+                  )}
                   <p className="mt-2 line-clamp-2 text-sm leading-6 text-[var(--muted)]">
                     {product.descricao || "Sem descrição cadastrada."}
                   </p>

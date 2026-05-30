@@ -15,6 +15,8 @@ export default function AdminCreate({ onCreated }: AdminCreateProps) {
   const [nome, setNome] = useState("")
   const [descricao, setDescricao] = useState("")
   const [cores, setCores] = useState("")
+  const [categoria, setCategoria] = useState("")
+  const [maisPedido, setMaisPedido] = useState(false)
   const [files, setFiles] = useState<File[]>([])
   const [previewUrls, setPreviewUrls] = useState<string[]>([])
   const [fileInputKey, setFileInputKey] = useState(0)
@@ -51,12 +53,16 @@ export default function AdminCreate({ onCreated }: AdminCreateProps) {
         nome,
         descricao,
         cores,
+        categoria,
+        maisPedido,
         images: urls,
       })
 
       setNome("")
       setDescricao("")
       setCores("")
+      setCategoria("")
+      setMaisPedido(false)
       setFiles([])
       setPreviewUrls([])
       setFileInputKey((current) => current + 1)
@@ -143,6 +149,35 @@ export default function AdminCreate({ onCreated }: AdminCreateProps) {
         </div>
 
         <div>
+          <label className="block text-sm font-bold text-[var(--foreground)]">Categoria</label>
+          <select
+            value={categoria}
+            onChange={(event) => setCategoria(event.target.value)}
+            className="field mt-2 px-4 py-4 text-base"
+          >
+            <option value="">Nenhuma</option>
+            <option value="Sousplats">Sousplats</option>
+            <option value="Trilhos de mesa">Trilhos de mesa</option>
+            <option value="Caminhos de mesa">Caminhos de mesa</option>
+            <option value="Porta-copos">Porta-copos</option>
+            <option value="Descanso de panela">Descanso de panela</option>
+            <option value="Porta guardanapo">Porta guardanapo</option>
+            <option value="Itens de Decoração">Itens de Decoração</option>
+          </select>
+          <p className="mt-2 text-sm text-[var(--muted)]">Escolha uma categoria fixa para organizar o catálogo.</p>
+        </div>
+
+        <label className="flex items-center gap-3 rounded-lg border border-[var(--line)] bg-[var(--surface-muted)] px-4 py-3 text-base font-bold text-[var(--foreground)]">
+          <input
+            type="checkbox"
+            checked={maisPedido}
+            onChange={(e) => setMaisPedido(e.target.checked)}
+            className="h-5 w-5"
+          />
+          Marcar como &quot;Mais pedido&quot;
+        </label>
+
+        <div>
           <label className="inline-flex items-center gap-2 text-sm font-bold text-[var(--foreground)]">
             <Palette className="h-4 w-4 text-[var(--primary)]" />
             Cores disponíveis
@@ -191,6 +226,7 @@ export default function AdminCreate({ onCreated }: AdminCreateProps) {
                   aria-label={`Preview da imagem ${index + 1}`}
                   className="overflow-hidden rounded-xl border border-[var(--line)] bg-[var(--surface-muted)] shadow-sm"
                 >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={url}
                     alt={`Preview da imagem ${index + 1}`}

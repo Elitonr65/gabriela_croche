@@ -5,6 +5,38 @@ import SafeImage from "@/components/SafeImage"
 import ProductSidebar from "@/components/ProductSidebar"
 import { getProductById } from "@/services/getProductById"
 
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> | { id: string } }) {
+  const { id } = (await params) as { id: string }
+  const product = await getProductById(id)
+
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || ""
+
+  if (!product) {
+    return {
+      title: "Produto",
+    }
+  }
+
+  const imageUrl = product.imagens && product.imagens[0]?.url
+    ? (product.imagens[0].url.startsWith("http") ? product.imagens[0].url : `${siteUrl.replace(/\/$/, "")}${product.imagens[0].url.startsWith("/") ? product.imagens[0].url : `/${product.imagens[0].url}`}`)
+    : (siteUrl ? `${siteUrl.replace(/\/$/, "")}/placeholder.svg` : "/placeholder.svg")
+
+  return {
+    title: product.nome,
+    description: product.descricao || "Produto disponível no catálogo",
+    openGraph: {
+      title: product.nome,
+      description: product.descricao || "",
+      url: siteUrl ? `${siteUrl.replace(/\/$/, "")}/produto/${id}` : `/produto/${id}`,
+      images: [
+        {
+          url: imageUrl,
+        },
+      ],
+    },
+  }
+}
+
 export default async function ProdutoPage({
   params,
 }: {
@@ -52,8 +84,10 @@ export default async function ProdutoPage({
         <ProductSidebar
           nome={product.nome}
           descricao={product.descricao}
+          categoria={product.categoria}
           cores={product.cores}
           imagemUrl={mainImageUrl}
+          productId={product.id}
         />
       </div>
     </div>

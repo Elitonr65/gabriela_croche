@@ -2,8 +2,10 @@
 -- Ele assume as tabelas public.produtos e public.imagens.
 -- Tambem cria/atualiza o bucket publico "produtos" para upload de imagens.
 
--- Adicionar coluna cores (se nao existir)
+-- Adicionar colunas de cores e categoria (se nao existirem)
 alter table public.produtos add column if not exists cores text;
+alter table public.produtos add column if not exists categoria text;
+alter table public.produtos add column if not exists mais_pedido boolean default false;
 
 create table if not exists public.admins (
   user_id text primary key,
