@@ -20,7 +20,7 @@ export async function getProducts(): Promise<Product[]> {
       status,
       imagens (id, url, ordem)
     `)
-    .order("nome", { ascending: true })
+    .order("created_at", { ascending: false })
 
   if (error) {
     console.error(error)
